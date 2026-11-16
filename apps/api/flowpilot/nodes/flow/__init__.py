@@ -1,0 +1,1 @@
+from flowpilot.nodes.flow import ifNode  # noqa: F401

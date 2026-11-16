@@ -1,0 +1,819 @@
+@import "./tokens.css";
+
+@property --ring-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@layer base {
+  * {
+    border-color: var(--line-subtle);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg-app);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.45;
+    overflow: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 38%, transparent);
+    color: var(--text-primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--line-strong);
+    background-clip: padding-box;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: var(--glass);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border: 1px solid var(--line-default);
+    box-shadow: var(--shadow-float);
+  }
+
+  .gradient-text {
+    background: var(--accent-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gradient-border {
+    position: relative;
+    background:
+      linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
+      var(--accent-grad) border-box;
+    border: 1px solid transparent;
+  }
+
+  .hairline {
+    box-shadow: inset 0 0 0 1px var(--line-subtle);
+  }
+
+  .surface-card {
+    background:
+      radial-gradient(
+        120% 90% at 50% 0%,
+        color-mix(in oklab, var(--text-primary) 3%, transparent) 0%,
+        transparent 52%
+      ),
+      var(--bg-surface);
+    border: 1px solid var(--line-subtle);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 1px 0 var(--line-subtle) inset;
+  }
+
+  .surface-card-hover {
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .surface-card-hover:hover {
+    border-color: var(--line-default);
+    background-color: var(--bg-surface-2);
+    transform: translateY(-1px);
+  }
+
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 5px;
+    border: 1px solid var(--line-default);
+    background: var(--bg-surface-2);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    flex: none;
+  }
+
+  /* ---------- Canvas nodes ---------- */
+
+  .fp-node-tile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: var(--bg-node);
+    border: 1.5px solid var(--line-default);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    transition:
+      background 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+    overflow: hidden;
+  }
+
+  /* Triggers: large leading corners, tighter trailing corners (n8n geometry). */
+  .fp-node-tile-trigger {
+    border-radius: 36px 16px 16px 36px;
+  }
+
+  /* Actions: inverse of trigger geometry. */
+  .fp-node-tile-action {
+    border-radius: 16px 36px 36px 16px;
+  }
+
+  /* Success check badge on triggers (mirrors sub-node placement). */
+  .fp-trigger-check {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 3px solid var(--bg-canvas);
+    background: var(--success);
+    z-index: 6;
+    font-size: 12px;
+    color: white;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 18px var(--success-glow);
+    animation: fp-badge-pulse 2s ease-in-out infinite;
+  }
+
+  .fp-node:hover .fp-node-tile {
+    background: var(--bg-node-hover);
+    border-color: var(--line-strong);
+    transform: translateY(-1px);
+  }
+
+  .react-flow__node.selected .fp-node-tile {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1.5px var(--accent),
+      0 0 26px var(--accent-glow),
+      var(--shadow-node);
+  }
+
+  .react-flow__node.selected .fp-node-subtile {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1.5px var(--accent),
+      0 0 24px var(--accent-glow),
+      var(--shadow-node);
+  }
+
+  .react-flow__node.fp-node-disabled {
+    opacity: 0.5;
+  }
+
+  .react-flow__node.fp-node-disabled .fp-node-label-title {
+    text-decoration: line-through;
+  }
+
+  .fp-node-running .fp-node-tile,
+  .fp-node-running .fp-node-subtile {
+    border-color: transparent;
+  }
+
+  .fp-node-running .fp-node-tile::after,
+  .fp-node-running .fp-node-subtile::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--ring-angle, 0deg),
+      var(--accent),
+      #22d3ee,
+      var(--accent)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: fp-ring 2s linear infinite;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .fp-node-label {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 8px);
+    transform: translateX(-50%);
+    width: 184px;
+    text-align: center;
+    pointer-events: none;
+    line-height: 1.25;
+  }
+
+  .fp-node-label-title {
+    color: var(--text-primary);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fp-node-label-subtitle {
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html.fp-compact-labels .fp-node-label-subtitle {
+    display: none;
+  }
+
+  .fp-trigger-bolt {
+    position: absolute;
+    right: calc(100% + 16px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 34px;
+    color: var(--text-primary);
+    z-index: 3;
+  }
+
+  .fp-add-stub {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    z-index: 4;
+  }
+
+  .fp-add-stub-line {
+    height: 1.5px;
+    width: 30px;
+    background: linear-gradient(90deg, var(--edge), var(--line-default));
+  }
+
+  .fp-add-stub-btn {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    background: var(--bg-surface-2);
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+    transition:
+      color 0.14s ease,
+      border-color 0.14s ease,
+      background 0.14s ease,
+      transform 0.14s ease;
+  }
+
+  .fp-add-stub-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: scale(1.08);
+  }
+
+  .fp-port-label {
+    position: absolute;
+    right: calc(100% + 11px);
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .fp-subport-label {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .fp-subport-label-required::after {
+    content: " *";
+    color: var(--danger);
+    font-weight: 700;
+  }
+
+  .fp-node-subtile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-node);
+    border: 1.5px solid var(--line-default);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    transition:
+      background 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .fp-node:hover .fp-node-subtile {
+    background: var(--bg-node-hover);
+    border-color: var(--line-strong);
+  }
+
+  .sticky-note {
+    background: var(--note-bg, var(--sticky-amber-bg));
+    border: 1px solid var(--note-border, var(--sticky-amber-border));
+    border-radius: 12px;
+    box-shadow: var(--shadow-node);
+  }
+
+  .sticky-amber {
+    --note-bg: var(--sticky-amber-bg);
+    --note-border: var(--sticky-amber-border);
+  }
+  .sticky-violet {
+    --note-bg: var(--sticky-violet-bg);
+    --note-border: var(--sticky-violet-border);
+  }
+  .sticky-cyan {
+    --note-bg: var(--sticky-cyan-bg);
+    --note-border: var(--sticky-cyan-border);
+  }
+  .sticky-green {
+    --note-bg: var(--sticky-green-bg);
+    --note-border: var(--sticky-green-border);
+  }
+  .sticky-rose {
+    --note-bg: var(--sticky-rose-bg);
+    --note-border: var(--sticky-rose-border);
+  }
+  .sticky-blue {
+    --note-bg: var(--sticky-blue-bg);
+    --note-border: var(--sticky-blue-border);
+  }
+  .sticky-slate {
+    --note-bg: var(--sticky-slate-bg);
+    --note-border: var(--sticky-slate-border);
+  }
+  .sticky-orange {
+    --note-bg: var(--sticky-orange-bg);
+    --note-border: var(--sticky-orange-border);
+  }
+
+  .fp-node-badge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid var(--bg-canvas);
+    z-index: 6;
+    font-size: 10px;
+    color: white;
+  }
+
+  /* ---------- React Flow ---------- */
+
+  .react-flow {
+    --xy-background-color: transparent;
+  }
+
+  .react-flow__node {
+    overflow: visible;
+    font-family: var(--font-sans);
+  }
+
+  .react-flow__node:focus,
+  .react-flow__node:focus-visible {
+    outline: none;
+  }
+
+  .react-flow__handle.fp-handle {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: var(--bg-canvas);
+    border: 2px solid var(--edge);
+    transition:
+      transform 0.14s ease,
+      border-color 0.14s ease,
+      background 0.14s ease,
+      box-shadow 0.14s ease;
+  }
+
+  .react-flow__handle.fp-handle:hover,
+  .react-flow__handle.fp-handle.connectiontarget {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .react-flow__handle.fp-handle-diamond {
+    width: 11px;
+    height: 11px;
+    border-radius: 2.5px;
+    background: var(--bg-canvas);
+    border: 1.5px solid var(--edge);
+    rotate: 45deg;
+    transition:
+      border-color 0.14s ease,
+      background 0.14s ease,
+      box-shadow 0.14s ease;
+  }
+
+  .react-flow__handle.fp-handle-diamond:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .react-flow__handle.fp-handle-agent {
+    width: 13px;
+    height: 13px;
+    border-radius: 3px;
+    background: var(--bg-node);
+    border: 1.5px solid var(--edge);
+    rotate: 45deg;
+  }
+
+  .react-flow__handle.fp-handle-agent:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .react-flow__edge-path {
+    stroke: var(--edge);
+    stroke-width: 1.5;
+    transition: stroke 0.15s ease;
+  }
+
+  /* Prevent pan-on-drag from capturing clicks on edge toolbar buttons. */
+  .nodrag,
+  .nopan {
+    pointer-events: auto !important;
+  }
+
+  .edge-toolbar button {
+    pointer-events: auto;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--line-default);
+    color: var(--text-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+    transition: all 0.14s ease;
+  }
+
+  .edge-toolbar button:hover {
+    background: var(--bg-surface-2);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.1);
+  }
+
+  .edge-toolbar button.danger {
+    color: var(--text-secondary);
+  }
+
+  .edge-toolbar button.danger:hover {
+    background: var(--danger-soft);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .react-flow__edge:hover .react-flow__edge-path {
+    stroke: var(--text-secondary);
+  }
+
+  .react-flow__edge.selected .react-flow__edge-path {
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+
+  .react-flow__edge.fp-edge-ai .react-flow__edge-path {
+    stroke-dasharray: 4 5;
+    stroke-width: 1.25;
+    opacity: 0.8;
+  }
+
+  .fp-edge-running {
+    stroke: var(--accent) !important;
+    stroke-width: 2 !important;
+    stroke-dasharray: 7 7;
+    animation: fp-dash 0.55s linear infinite;
+  }
+
+  .react-flow__connection-path {
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-dasharray: 5 5;
+    animation: fp-dash 0.7s linear infinite;
+  }
+
+  .react-flow__selection {
+    background: var(--marquee);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+  }
+
+  .react-flow__pane {
+    cursor: grab;
+  }
+
+  .react-flow__pane.dragging,
+  .react-flow__pane:active {
+    cursor: grabbing;
+  }
+
+  .react-flow__nodesselection-rect {
+    background: var(--marquee);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+  }
+
+  .react-flow__attribution {
+    display: none;
+  }
+
+  .react-flow__panel {
+    margin: 0;
+  }
+
+  .react-flow__edge-textbg {
+    fill: var(--bg-canvas);
+  }
+
+  .react-flow__edge-text {
+    fill: var(--text-muted);
+    font-size: 10.5px;
+  }
+
+  .edge-toolbar {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 9px;
+    background: var(--glass);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--line-default);
+    box-shadow: var(--shadow-float);
+    pointer-events: all;
+  }
+
+  /* Larger invisible hit area so the pointer can travel from the edge to the
+     toolbar without the hover state dropping out. */
+  .edge-toolbar::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+  }
+
+  .edge-toolbar button {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .edge-toolbar button:hover {
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
+  }
+
+  .edge-toolbar button.danger:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  /* ---------- misc ---------- */
+
+  .fp-rail-active-bar {
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    height: 16px;
+    width: 2px;
+    border-radius: 999px;
+    background: var(--accent);
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.16s ease;
+    pointer-events: none;
+  }
+
+  [aria-current="page"] .fp-rail-active-bar {
+    opacity: 1;
+  }
+
+  .dot-vignette {
+    background: var(--canvas-vignette);
+  }
+
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-surface-2);
+    border-radius: 8px;
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--text-primary) 6%, transparent),
+      transparent
+    );
+    animation: fp-shimmer 1.6s infinite;
+  }
+
+  .fp-scroll {
+    scrollbar-gutter: stable;
+  }
+
+  .grid-fade-mask {
+    mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+  }
+}
+
+@keyframes fp-dash {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+@keyframes fp-ring {
+  to {
+    --ring-angle: 360deg;
+  }
+}
+
+@keyframes fp-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fp-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fp-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fp-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes fp-badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 18px var(--success-glow);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 28px var(--success-glow);
+  }
+}
+
+.animate-fade-in {
+  animation: fp-fade-in 0.24s ease-out both;
+}
+
+.animate-scale-in {
+  animation: fp-scale-in 0.18s ease-out both;
+}
+
+.animate-pulse-soft {
+  animation: fp-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

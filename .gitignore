@@ -1,0 +1,36 @@
+# Secrets / env
+.env
+.env.*
+!.env.example
+apps/**/.env
+apps/**/.env.*
+!apps/**/.env.example
+
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs & temp
+*.log
+tc.log
+test.log
+build*.log
+lint.log
+speed_test.py
+bot.py
+
+# n8n reference (large, not needed)
+n8n-src/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

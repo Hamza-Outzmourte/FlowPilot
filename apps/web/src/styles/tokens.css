@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-node: 22px;
+  --radius-panel: 14px;
+  --radius-control: 10px;
+
+  --color-app: var(--bg-app);
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-surface-2: var(--bg-surface-2);
+  --color-surface-3: var(--bg-surface-3);
+  --color-node: var(--bg-node);
+  --color-node-hover: var(--bg-node-hover);
+
+  --color-hairline: var(--line-subtle);
+  --color-line: var(--line-default);
+  --color-line-strong: var(--line-strong);
+
+  --color-ink: var(--text-primary);
+  --color-ink-2: var(--text-secondary);
+  --color-ink-3: var(--text-muted);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+:root,
+html.dark {
+  /* Surfaces (dark-first) */
+  --bg-app: #131316;
+  --bg-canvas: #0d0d10;
+  --bg-surface: #1a1a1f;
+  --bg-surface-2: #232329;
+  --bg-surface-3: #2b2b32;
+  --bg-node: #2a2a30;
+  --bg-node-hover: #33333a;
+
+  /* Lines */
+  --line-subtle: rgba(255, 255, 255, 0.07);
+  --line-default: rgba(255, 255, 255, 0.13);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --canvas-dot: rgba(255, 255, 255, 0.09);
+  --edge: #6b6b74;
+
+  /* Text */
+  --text-primary: #f4f4f6;
+  --text-secondary: #b0b0ba;
+  --text-muted: #787884;
+
+  /* Brand + semantic */
+  --accent: #8b5cf6;
+  --accent-hover: #9d75f8;
+  --accent-soft: rgba(139, 92, 246, 0.14);
+  --accent-glow: rgba(139, 92, 246, 0.35);
+  --accent-grad: linear-gradient(135deg, #8b5cf6 0%, #22d3ee 100%);
+  --success: #22c55e;
+  --success-glow: rgba(34, 197, 94, 0.45);
+  --success-soft: rgba(34, 197, 94, 0.14);
+  --warning: #f59e0b;
+  --warning-soft: rgba(245, 158, 11, 0.14);
+  --danger: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.14);
+  --info: #38bdf8;
+
+  /* Effects */
+  --shadow-node:
+    0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-float: 0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px var(--line-default);
+  --node-highlight: rgba(255, 255, 255, 0.075);
+  --node-shade: rgba(0, 0, 0, 0.18);
+  --glass: rgba(23, 23, 27, 0.82);
+  --canvas-vignette: radial-gradient(
+    120% 90% at 50% 0%,
+    rgba(139, 92, 246, 0.055) 0%,
+    rgba(12, 12, 14, 0) 55%
+  );
+  --scroll-thumb: rgba(255, 255, 255, 0.14);
+  --marquee: rgba(139, 92, 246, 0.08);
+  --sticky-amber-bg: rgba(245, 158, 11, 0.12);
+  --sticky-amber-border: rgba(245, 158, 11, 0.26);
+  --sticky-violet-bg: rgba(139, 92, 246, 0.13);
+  --sticky-violet-border: rgba(139, 92, 246, 0.28);
+  --sticky-cyan-bg: rgba(34, 211, 238, 0.11);
+  --sticky-cyan-border: rgba(34, 211, 238, 0.26);
+  --sticky-green-bg: rgba(34, 197, 94, 0.11);
+  --sticky-green-border: rgba(34, 197, 94, 0.25);
+  --sticky-rose-bg: rgba(244, 63, 94, 0.11);
+  --sticky-rose-border: rgba(244, 63, 94, 0.25);
+  --sticky-blue-bg: rgba(56, 189, 248, 0.11);
+  --sticky-blue-border: rgba(56, 189, 248, 0.25);
+  --sticky-slate-bg: rgba(148, 163, 184, 0.12);
+  --sticky-slate-border: rgba(148, 163, 184, 0.24);
+  --sticky-orange-bg: rgba(251, 146, 60, 0.12);
+  --sticky-orange-border: rgba(251, 146, 60, 0.26);
+  color-scheme: dark;
+}
+
+html.light {
+  --bg-app: #f6f6f8;
+  --bg-canvas: #fafafb;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #f1f1f4;
+  --bg-surface-3: #e9e9ee;
+  --bg-node: #ffffff;
+  --bg-node-hover: #f4f4f7;
+  --line-subtle: rgba(0, 0, 0, 0.055);
+  --line-default: rgba(0, 0, 0, 0.09);
+  --line-strong: rgba(0, 0, 0, 0.16);
+  --canvas-dot: rgba(15, 15, 20, 0.13);
+  --edge: #a1a1ad;
+  --text-primary: #131316;
+  --text-secondary: #4a4a55;
+  --text-muted: #8a8a96;
+  --accent-soft: rgba(139, 92, 246, 0.1);
+  --accent-glow: rgba(139, 92, 246, 0.22);
+  --success-soft: rgba(34, 197, 94, 0.12);
+  --success-glow: rgba(34, 197, 94, 0.3);
+  --warning-soft: rgba(245, 158, 11, 0.14);
+  --danger-soft: rgba(239, 68, 68, 0.1);
+  --shadow-node: 0 1px 2px rgba(0, 0, 0, 0.05), 0 10px 26px rgba(20, 20, 40, 0.08);
+  --shadow-float: 0 16px 44px rgba(20, 20, 40, 0.13), 0 0 0 1px var(--line-default);
+  --node-highlight: rgba(255, 255, 255, 0.9);
+  --node-shade: rgba(20, 20, 40, 0.035);
+  --glass: rgba(255, 255, 255, 0.84);
+  --canvas-vignette: radial-gradient(
+    120% 90% at 50% 0%,
+    rgba(139, 92, 246, 0.05) 0%,
+    rgba(246, 246, 248, 0) 55%
+  );
+  --scroll-thumb: rgba(0, 0, 0, 0.16);
+  --marquee: rgba(139, 92, 246, 0.08);
+  color-scheme: light;
+}
